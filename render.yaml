@@ -1,0 +1,27 @@
+# Render Blueprint — deploys the backend as a free web service.
+#
+# Scope note: this does NOT provision a database yet. The backend has no
+# real database dependency until Milestone 5 (Spatial Database), so adding
+# a Postgres/PostGIS instance now would just start its lifecycle clock for
+# nothing — Render's free Postgres expires 30 days after creation. When
+# Milestone 5 lands, add a `databases:` block here (or point DATABASE_URL
+# at an external free Postgres+PostGIS host such as Supabase, which doesn't
+# expire on a timer) — see DEPLOYMENT.md for the tradeoffs.
+#
+# To use: Render dashboard -> New -> Blueprint -> select this repo.
+services:
+  - type: web
+    name: khaochalak-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      # Update this after the frontend is deployed to Cloudflare Pages —
+      # it must be the exact deployed frontend origin(s), comma-separated,
+      # no trailing slash. See DEPLOYMENT.md step 3.
+      - key: CORS_ALLOW_ORIGINS
+        value: https://khao-chalak-nav.pages.dev

@@ -1,0 +1,5 @@
+/* Global reset only — component styling lives in App.css per component/page. */
+* {
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,28 @@
+# Env / secrets
+.env
+*.env.local
+
+# Node
+node_modules/
+dist/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# GIS working data (large binaries — never commit raw DEM/rasters)
+data/raw/
+*.tif
+*.tiff
+!data/samples/**
+
+# Offline packages (generated)
+offline_packages/
