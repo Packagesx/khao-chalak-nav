@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers config for serving the built static frontend
+  // (Vite output in ./dist) as a Worker with static assets.
+  // See DEPLOYMENT.md for the full Cloudflare deploy walkthrough.
+  "name": "khao-chalak-nav",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
