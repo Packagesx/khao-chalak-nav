@@ -28,12 +28,15 @@ routing, terrain, or offline features exist yet.
 
 ```
 khao-chalak-nav/
-├── frontend/          React + TypeScript + Vite app (MapLibre GL JS)
+├── frontend/          React + TypeScript + Vite app (MapLibre GL JS), PWA-installable
+├── landing/           Standalone APK/download page — deployed separately from
+│                      the nav app itself, so the shared download link is a
+│                      distinct, more trustworthy URL. See DEPLOYMENT.md.
 ├── backend/           FastAPI app
 ├── docker-compose.yml Frontend + backend + PostGIS, for local dev
 ├── .env.example       Copy to .env — no secrets are committed
 ├── GIS_DATA.md        Provenance/metadata for every spatial dataset
-├── DEPLOYMENT.md      How to put this online (Cloudflare Pages + Render, free)
+├── DEPLOYMENT.md      How to put this online (Cloudflare + Render, free) + APK build
 ├── INSTALL.md         Detailed local install walkthrough (Thai)
 └── README.md          You are here
 ```
@@ -100,11 +103,18 @@ project's data rules before adding new spatial data.
 ## Deploying so others can use it
 
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full step-by-step (push to
-GitHub → Render for the backend → Cloudflare Pages for the frontend, all
+GitHub → Render for the backend → Cloudflare for the frontend, all
 free tier). Note the free-tier caveats documented there — Render's free
 web service sleeps after 15 minutes idle, and its free Postgres expires
 after 30 days, which is why no database is deployed yet (none is needed
 until Milestone 5).
+
+The frontend is PWA-installable ("Add to Home Screen" on Android/iOS).
+DEPLOYMENT.md also covers packaging that PWA as a real Android `.apk`
+(via PWABuilder — no Mac or Google Play account required just to build
+the file) and publishing it from the separate `landing/` download page
+rather than the nav app's own URL, so a shared download link looks
+trustworthy.
 
 ## Next milestone
 

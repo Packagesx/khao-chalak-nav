@@ -73,6 +73,78 @@
 
 ---
 
+## ขั้นที่ 5 — ทำให้เว็บ "ติดตั้งได้" (PWA)
+
+เพิ่ม `vite-plugin-pwa` ให้ `frontend/` แล้ว (manifest + service worker + ไอคอนแอป)
+ผลคือพอเปิดเว็บ khao-chalak-nav.pack-rezone.workers.dev บนมือถือ จะกด
+"เพิ่มไปหน้าจอโฮม" (Add to Home Screen) ได้ มีไอคอนแอปจริง เปิดแบบเต็มจอ
+ไม่มีแถบ URL — และเป็นพื้นฐานที่จำเป็นก่อนจะสร้างไฟล์ .apk ในขั้นถัดไป
+
+ครั้งแรกหลัง pull โค้ดนี้มา ต้องรัน `npm install` ใหม่ในโฟลเดอร์ `frontend/`
+อีกครั้ง (มี dependency ใหม่คือ `vite-plugin-pwa`) — Cloudflare จะ `npm install`
+ให้เองอัตโนมัติตอน deploy อยู่แล้ว ไม่ต้องทำอะไรเพิ่มฝั่ง Cloudflare
+
+## ขั้นที่ 6 — สร้างไฟล์ .apk (Android) ผ่าน PWABuilder
+
+ไม่ต้องมี Mac ไม่ต้องมี Google Play Developer account ก็ทำได้ (account นั้นจำเป็น
+แค่ตอนจะเอาขึ้น Play Store จริงๆ ให้คนทั่วไปค้นเจอ ไม่ใช่ตอนแค่สร้างไฟล์ apk)
+
+1. รอให้ขั้นที่ 5 (PWA) deploy เสร็จและ CORS ผูกเรียบร้อยก่อน (เว็บต้องขึ้น
+   "API: online" และติดตั้งจากมือถือได้จริงก่อน)
+2. เข้า https://www.pwabuilder.com วางลิงก์ `https://khao-chalak-nav.pack-rezone.workers.dev`
+   แล้วกด Start
+3. รอมันสแกนแล้วให้คะแนน PWA (ควรผ่านเกณฑ์ installable เพราะมี manifest+service
+   worker แล้ว) กด "Package for stores" → เลือก **Android**
+4. ตั้งค่าตามค่า default ได้เลย (มันจะ generate เป็น Trusted Web Activity — TWA)
+   กด Generate แล้วดาวน์โหลดไฟล์ `.apk` (หรือ `.aab`) มาเก็บไว้ในเครื่อง
+
+## ขั้นที่ 7 — เอาไฟล์ .apk ไปแปะที่หน้าดาวน์โหลด (landing page)
+
+ตั้งใจแยกหน้าดาวน์โหลดออกจากตัวแอปนำทาง เพื่อความน่าเชื่อถือตอนส่งลิงก์ให้คนอื่น
+(คนละ URL กับตัวแอป) — โค้ดอยู่ในโฟลเดอร์ `landing/` แยกต่างหากแล้ว
+
+### 7.1 อัปโหลดไฟล์ apk ขึ้น GitHub Releases (ที่เก็บไฟล์ฟรี น่าเชื่อถือเพราะผูกกับ repo สาธารณะ)
+1. เข้า https://github.com/Packagesx/khao-chalak-nav/releases/new
+2. ตั้ง tag เช่น `v0.1.0-apk`, ชื่อ release อะไรก็ได้
+3. ลากไฟล์ `.apk` จากขั้นที่ 6 ไปวางในช่อง "Attach binaries"
+4. กด **Publish release** — จะได้ลิงก์ดาวน์โหลดตรงประมาณ
+   `https://github.com/Packagesx/khao-chalak-nav/releases/download/v0.1.0-apk/<ชื่อไฟล์>.apk`
+
+### 7.2 แก้ลิงก์ในหน้าดาวน์โหลด
+เปิด `landing/index.html` หา comment `TODO(deploy step)` แล้วแก้ปุ่ม:
+```html
+<a class="btn btn-primary disabled" href="#" aria-disabled="true">
+  ⬇️ ดาวน์โหลด APK (เร็วๆ นี้)
+</a>
+```
+เป็น (ใส่ลิงก์จริงจากขั้น 7.1 แล้วเอา class `disabled` กับ `aria-disabled` ออก):
+```html
+<a class="btn btn-primary" href="https://github.com/Packagesx/khao-chalak-nav/releases/download/v0.1.0-apk/<ชื่อไฟล์>.apk">
+  ⬇️ ดาวน์โหลด APK
+</a>
+```
+แล้ว commit + push ตามปกติ
+
+### 7.3 Deploy หน้าดาวน์โหลดเป็น Cloudflare Worker แยกต่างหาก
+ทำเหมือนขั้นที่ 3 (deploy frontend) เป๊ะๆ แต่เป็นโปรเจกต์ Cloudflare **ใหม่แยกต่างหาก**
+(อย่าไปแก้โปรเจกต์เดิมของ frontend):
+
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → เชื่อม repo
+   `khao-chalak-nav` ซ้ำได้ (repo เดียวกัน คนละโปรเจกต์ deploy)
+2. ตั้งค่า:
+   | ช่อง | ค่าที่ใส่ |
+   |---|---|
+   | Root directory | `landing` |
+   | Build command | *(เว้นว่างไว้ — ไม่มี build step เพราะเป็น HTML ธรรมดา)* |
+   | Deploy command | `npx wrangler deploy` |
+3. Save and Deploy — จะได้ URL แยกต่างหากประมาณ
+   `https://khao-chalak-nav-download.<subdomain>.workers.dev`
+   (คนละลิงก์กับตัวแอปนำทางเลย เอาลิงก์นี้แหละไปแจกให้คนอื่นโหลด)
+4. อย่าลืมไปเปิด Worker URL toggle ในแท็บ **Domains** เหมือนตอน deploy frontend
+   (ไม่งั้นจะขึ้น "No URLs enabled")
+
+---
+
 ## เช็คให้ครบก่อนบอกว่า "ใช้งานได้แล้ว"
 
 - [ ] เปิด `https://<ชื่อโปรเจกต์>.pages.dev` จากมือถือ/เครื่องอื่นได้ (ลองส่งลิงก์ให้เพื่อนเปิดดูจริง)

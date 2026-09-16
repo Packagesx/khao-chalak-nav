@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="ดาวน์โหลดแอป Khao Chalak Outdoor Navigation -- แอปนำทางเดินป่า/วิ่งเทรลเขาฉลาก ชลบุรี" />
+    <meta name="theme-color" content="#0b0f14" />
+    <link rel="icon" href="/icon.png" />
+    <title>ดาวน์โหลด Khao Chalak Outdoor Navigation</title>
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --panel: #121821;
+        --panel-2: #232c38;
+        --accent: #3ddc97;
+        --muted: #8a97a6;
+        --light: #e7edf3;
+        --danger: #ff5f5f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--light);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", Roboto,
+          Sarabun, sans-serif;
+        display: flex;
+        justify-content: center;
+      }
+      main {
+        width: 100%;
+        max-width: 560px;
+        padding: 32px 20px 64px;
+      }
+      .logo-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+      }
+      .logo-wrap img {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 22px;
+        margin: 0 0 6px;
+      }
+      .tagline {
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0 0 28px;
+        line-height: 1.6;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-2);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .card h2 {
+        font-size: 15px;
+        margin: 0 0 12px;
+        color: var(--light);
+      }
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #06251b;
+      }
+      .btn-primary.disabled {
+        background: var(--panel-2);
+        color: var(--muted);
+        cursor: not-allowed;
+      }
+      .btn-secondary {
+        background: transparent;
+        color: var(--light);
+        border: 1px solid var(--panel-2);
+      }
+      .meta-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      .badge {
+        display: inline-block;
+        background: var(--panel-2);
+        color: var(--accent);
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+      }
+      ol {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.8;
+      }
+      ol li::marker {
+        color: var(--accent);
+      }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.8;
+        margin-top: 24px;
+      }
+      .footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 12px;
+        margin: 20px 0;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--panel-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="logo-wrap">
+        <img src="/icon.png" alt="Khao Chalak Outdoor Navigation" />
+      </div>
+      <h1>Khao Chalak Outdoor Navigation</h1>
+      <p class="tagline">
+        แอปนำทางเดินป่า / วิ่งเทรล สำหรับเขาฉลาก จ.ชลบุรี<br />
+        ออฟไลน์ได้ ข้อมูล GIS จริง ไม่มีมั่ว
+      </p>
+
+      <div class="card">
+        <span class="badge">Android</span>
+        <h2>ดาวน์โหลดแอป (APK)</h2>
+        <!--
+          TODO(deploy step): this project isn't on Google Play yet, so
+          there's no APK built or hosted here yet either -- don't link a
+          fake/broken file. Once an APK is built (see DEPLOYMENT.md ->
+          "APK / TWA build"), upload it as a GitHub Release asset on
+          https://github.com/Packagesx/khao-chalak-nav/releases and swap
+          the href below for that asset's direct download URL, then
+          remove the `disabled` class and the "coming soon" label.
+        -->
+        <a class="btn btn-primary disabled" href="#" aria-disabled="true">
+          ⬇️ ดาวน์โหลด APK (เร็วๆ นี้)
+        </a>
+        <div class="meta-row">
+          <span>Android 8.0 ขึ้นไป</span>
+          <span>ยังไม่ได้ขึ้น Play Store</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>วิธีติดตั้ง (เพราะยังไม่ได้ขึ้น Play Store)</h2>
+        <ol>
+          <li>กดดาวน์โหลดไฟล์ .apk ด้านบน</li>
+          <li>
+            เปิดไฟล์ที่ดาวน์โหลดมา ถ้าเจอข้อความเตือนเรื่อง "แหล่งที่มาที่ไม่รู้จัก"
+            (Unknown sources) ให้กด "อนุญาต" / "ติดตั้งต่อ" เฉพาะแอปนี้แอปเดียว
+          </li>
+          <li>กด "ติดตั้ง" แล้วรอสักครู่</li>
+        </ol>
+      </div>
+
+      <div class="divider">หรือ</div>
+
+      <a class="btn btn-secondary" href="https://khao-chalak-nav.pack-rezone.workers.dev">
+        🌐 ใช้งานผ่านเว็บเบราว์เซอร์ (ไม่ต้องติดตั้ง)
+      </a>
+
+      <p class="footer">
+        โปรเจกต์นี้กำลังพัฒนาอยู่ (Milestone 0 — ยังไม่มีเส้นทาง/GPS จริง)
+        โค้ดเปิดเผยสาธารณะที่
+        <a href="https://github.com/Packagesx/khao-chalak-nav" target="_blank" rel="noopener">
+          GitHub
+        </a>
+        — หน้านี้เป็นหน้าดาวน์โหลดแยกจากตัวแอป ไม่ใช่ตัวแอปเอง
+      </p>
+    </main>
+  </body>
+</html>

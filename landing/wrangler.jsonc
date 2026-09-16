@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers config for the standalone APK/download landing
+  // page. Deployed as its OWN Worker/Pages project (separate from
+  // "khao-chalak-nav", the actual navigation app) so the download link
+  // people share lives at its own distinct URL -- see DEPLOYMENT.md,
+  // section "Landing/download page (separate deploy)".
+  "name": "khao-chalak-nav-download",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "."
+  }
+}
