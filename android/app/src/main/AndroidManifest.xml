@@ -10,6 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- Milestone 3 (GPS Tracking): a foreground service keeps recording
+         going while the phone is locked/backgrounded. FOREGROUND_SERVICE
+         plus the location-typed variant (required on Android 14/API 34,
+         our targetSdk) are both normal (non-runtime) permissions.
+         POST_NOTIFICATIONS (API 33+) is the one dangerous/runtime
+         permission here, requested alongside location when the user taps
+         "record". -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,5 +38,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Milestone 3: foreground service recording the active route. -->
+        <service
+            android:name=".tracking.TrackingService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>

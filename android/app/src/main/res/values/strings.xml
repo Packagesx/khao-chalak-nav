@@ -7,4 +7,13 @@
     <string name="locate_error_unavailable">Your position is currently unavailable. Check your device\'s GPS/location service and try again.</string>
     <string name="locate_error_generic">Could not get your current location.</string>
     <string name="mock_trail_data_label">⚠ MOCK TRAIL DATA — not real Khao Chalak trails, placeholder only</string>
+
+    <!-- Milestone 3: GPS Tracking -->
+    <string name="btn_record_start">Start recording</string>
+    <string name="btn_record_pause">Pause recording</string>
+    <string name="btn_record_resume">Resume recording</string>
+    <string name="btn_record_stop">Stop and save recording</string>
+    <string name="recording_status_recording">● Recording</string>
+    <string name="recording_status_paused">Paused</string>
+    <string name="recording_status_format">%1$s  •  %2$s  •  %3$.2f km</string>
 </resources>

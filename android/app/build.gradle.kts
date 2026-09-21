@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         // giving us modern location/permission APIs without extra shims.
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "0.2.0-milestone2"
+        versionCode = 3
+        versionName = "0.3.0-milestone3"
     }
 
     buildTypes {
@@ -58,4 +59,11 @@ dependencies {
     // the MapLibre GL JS map used in the web-frontend track (now archived).
     // See https://github.com/maplibre/maplibre-native
     implementation("org.maplibre.gl:android-sdk:13.6.1")
+
+    // Milestone 3 (GPS Tracking): local persistence for recorded routes.
+    // room-compiler runs via KSP, not kapt -- see the root build.gradle.kts
+    // comment for why.
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 }

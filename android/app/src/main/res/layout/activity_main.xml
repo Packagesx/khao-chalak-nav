@@ -91,4 +91,54 @@
         android:textSize="13sp"
         android:visibility="gone" />
 
+    <!-- Milestone 3: floating live-status card while recording/paused,
+         modeled on design-refs/live-tracking-ui-reference.png (see
+         DESIGN.md): elapsed time + distance, monospace for a "live
+         readout" feel. Bottom-left, floating above the controls below. -->
+    <TextView
+        android:id="@+id/recordingStatusCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="112dp"
+        android:background="@drawable/bg_recording_status_card"
+        android:fontFamily="monospace"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp"
+        android:textColor="#f2f2f2"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <!-- Milestone 3: record/pause/resume (primary) + stop (secondary,
+         appears once recording has started) controls, bottom-center. -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnStop"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="@string/btn_record_stop"
+            android:src="@drawable/ic_stop"
+            android:visibility="gone"
+            app:backgroundTint="@android:color/white"
+            app:fabSize="mini" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnRecord"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@string/btn_record_start"
+            android:src="@drawable/ic_record"
+            app:backgroundTint="@android:color/white" />
+
+    </LinearLayout>
+
 </FrameLayout>

@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Solid red circle, meaning "tap to start a new recording". Red
+         mirrors the universal REC-dot convention, deliberately distinct
+         from the app's teal accent (locate button) and the mock-trail
+         gray. -->
+    <path
+        android:fillColor="#ef5350"
+        android:pathData="M12,4c-4.42,0 -8,3.58 -8,8s3.58,8 8,8 8,-3.58 8,-8 -3.58,-8 -8,-8z" />
+</vector>
