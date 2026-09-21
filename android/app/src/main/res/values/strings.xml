@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Khao Chalak</string>
+    <string name="btn_zoom_in">Zoom in</string>
+    <string name="btn_zoom_out">Zoom out</string>
+    <string name="btn_locate">Current location</string>
+    <string name="locate_error_permission_denied">Location permission denied. Allow location access in Settings to use current location.</string>
+    <string name="locate_error_unavailable">Your position is currently unavailable. Check your device\'s GPS/location service and try again.</string>
+    <string name="locate_error_generic">Could not get your current location.</string>
+</resources>

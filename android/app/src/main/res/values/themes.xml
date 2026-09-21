@@ -1,0 +1,12 @@
+<resources>
+    <!-- Matches the app's existing dark identity (bg #0b0f14, accent
+         #3ddc97) established in the web frontend's App.css, so the native
+         app and the (now-archived) web preview still feel like the same
+         product. -->
+    <style name="Theme.KhaoChalakNav" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#3ddc97</item>
+        <item name="colorPrimaryDark">#0b0f14</item>
+        <item name="colorAccent">#3ddc97</item>
+        <item name="android:windowBackground">#0b0f14</item>
+    </style>
+</resources>

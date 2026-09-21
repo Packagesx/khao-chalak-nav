@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Zoom +/- stacked top-right, mirroring the web app's NavigationControl.
+         MapLibre's own compass appears automatically (top-right by default)
+         once the map is rotated away from north, and disappears again at
+         north-up, no extra widget needed for that. -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnZoomIn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@string/btn_zoom_in"
+            android:src="@drawable/ic_zoom_in"
+            app:fabSize="mini"
+            app:backgroundTint="@android:color/white"
+            app:tint="#333333" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnZoomOut"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/btn_zoom_out"
+            android:src="@drawable/ic_zoom_out"
+            app:fabSize="mini"
+            app:backgroundTint="@android:color/white"
+            app:tint="#333333" />
+    </LinearLayout>
+
+    <!-- Current-location control, bottom-right (thumb-reachable on a phone,
+         unlike the web version's top-right; a deliberate mobile-native
+         improvement, not just a port). -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnLocate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/btn_locate"
+        android:src="@drawable/ic_locate"
+        app:backgroundTint="@android:color/white"
+        app:tint="#3ddc97" />
+
+    <TextView
+        android:id="@+id/locateErrorBanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/bg_warning_banner"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textColor="#f5b942"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+</FrameLayout>

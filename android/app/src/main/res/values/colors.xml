@@ -1,0 +1,7 @@
+<resources>
+    <!-- Sampled from the chosen app-icon artwork's background, same value
+         used as the PWA's theme_color/background_color in the (now
+         archived) web frontend's vite.config.ts, so the icon and any
+         splash/status-bar treatment stay visually consistent. -->
+    <color name="ic_launcher_background">#17473b</color>
+</resources>
