@@ -2,10 +2,11 @@
 
 GIS-first, offline-first 2.5D/3D outdoor navigation platform for **Khao
 Chalak, Chonburi, Thailand** — trail running, hiking, and cycling. See
-[ARCHITECTURE.md](./ARCHITECTURE.md) for the full architecture decision and
+[ARCHITECTURE.md](./ARCHITECTURE.md) for the full architecture decision,
 [GIS_DATA.md](./GIS_DATA.md) for the status of every spatial dataset (this
 project never fabricates trail, POI, or elevation data — see that file's
-rules before adding any).
+rules before adding any), and [DESIGN.md](./DESIGN.md) for UI/UX design
+references and which ones are scoped into which milestone.
 
 This repository is being built **milestone by milestone** (see
 [ROADMAP.md](./ROADMAP.md) — added as milestones land). This is
@@ -67,6 +68,8 @@ khao-chalak-nav/
 ├── docker-compose.yml          Backend + PostGIS, for local dev
 ├── .env.example                Copy to .env — no secrets are committed
 ├── GIS_DATA.md                 Provenance/metadata for every spatial dataset
+├── DESIGN.md                    UI/UX design references, scoped per milestone
+├── design-refs/                 Reference screenshots cited by DESIGN.md
 ├── DEPLOYMENT.md                How to put the backend online (Render, free)
 ├── INSTALL.md                  Detailed local install walkthrough (Thai)
 └── README.md                   You are here
@@ -251,4 +254,9 @@ direct sideload testing.
 **Milestone 3 — GPS Tracking**: start/pause/stop recording a route with
 local persistence, using a real Android foreground service so recording
 survives the phone being locked/backgrounded (the main reason this project
-pivoted to a native app in the first place).
+pivoted to a native app in the first place). Scope now also includes a live
+recording UI modeled on `design-refs/live-tracking-ui-reference.png` — see
+[DESIGN.md](./DESIGN.md#reference-1--live-tracking-screen-design-refslive-tracking-ui-referencepng):
+a floating status card (elapsed time, freshness), a live distance/pace stat
+row, and the recorded-so-far track rendered on the map as a solid line
+(visually distinct from Milestone 2's muted-dashed mock trail).
