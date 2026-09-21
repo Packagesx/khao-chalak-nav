@@ -6,6 +6,7 @@
   --text-dim: #8a97a6;
   --accent: #3ddc97;
   --danger: #ff5f5f;
+  --warning: #f5b942;
 }
 
 * {
@@ -34,7 +35,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1rem;
+  padding: calc(0.75rem + env(safe-area-inset-top)) 1rem 0.75rem;
   background: var(--panel);
   border-bottom: 1px solid var(--border);
 }
@@ -71,18 +72,42 @@ body {
   width: 100%;
 }
 
-.map-error-banner {
+/* MapLibre's default controls (zoom/compass/geolocate) are 29x29px, below
+   the ~44px minimum recommended touch target on mobile. Enlarge the
+   button hit area while leaving the icon at its native size (centered),
+   and give stacked buttons a little breathing room for fat-finger taps. */
+.maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
+
+.maplibregl-ctrl-top-right {
+  top: env(safe-area-inset-top);
+  right: env(safe-area-inset-right);
+}
+
+.map-banner {
   position: absolute;
   top: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 95, 95, 0.15);
-  border: 1px solid var(--danger);
-  color: var(--danger);
   padding: 0.4rem 0.8rem;
   border-radius: 0.4rem;
   font-size: 0.8rem;
   max-width: 90%;
+  text-align: center;
+}
+
+.map-banner-error {
+  background: rgba(255, 95, 95, 0.15);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+.map-banner-warning {
+  background: rgba(245, 185, 66, 0.15);
+  border: 1px solid var(--warning);
+  color: var(--warning);
 }
 
 .stat-bar {
@@ -116,9 +141,11 @@ body {
   grid-template-columns: repeat(4, 1fr);
   background: var(--panel);
   border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottom-nav button {
+  min-height: 44px;
   padding: 0.75rem 0;
   background: none;
   border: none;
@@ -128,4 +155,18 @@ body {
 
 .bottom-nav button:disabled {
   opacity: 0.5;
+}
+
+/* Small phones (e.g. iPhone SE, ~375px and under): tighten up the stat
+   labels so four columns don't wrap or overflow. */
+@media (max-width: 380px) {
+  .stat-label {
+    font-size: 0.6rem;
+  }
+  .stat-value {
+    font-size: 0.9rem;
+  }
+  .bottom-nav button {
+    font-size: 0.75rem;
+  }
 }

@@ -9,8 +9,9 @@ rules before adding any).
 
 This repository is being built **milestone by milestone** (see
 [ROADMAP.md](./ROADMAP.md) — added as milestones land). This is
-**Milestone 0 — Project Foundation**: a runnable skeleton only. No trail,
-routing, terrain, or offline features exist yet.
+**Milestone 1 — Map MVP**: a mobile-responsive 2D map (pan/zoom/compass/
+current-location). No trail, routing, terrain, or offline features exist
+yet.
 
 ## Stack
 
@@ -72,6 +73,12 @@ npm install
 npm run dev
 ```
 
+To try the map controls, open the dev URL on your phone (or shrink your
+browser window) — pan by dragging, zoom with the +/- buttons or
+pinch/scroll, tap the compass button to reset bearing to north, and tap the
+location-arrow button to center on your current position (requires
+HTTPS or `localhost`, and browser location permission).
+
 ## Milestone 0 acceptance criteria
 
 - [x] `npm install` succeeds in `frontend/`
@@ -82,6 +89,31 @@ npm run dev
 - [x] No secrets committed to the repository (`.env` is git-ignored; only
       `.env.example` with non-sensitive local-dev defaults is tracked)
 
+## Milestone 1 acceptance criteria
+
+- [x] Map pans by drag (mouse and touch) — MapLibre's default `dragPan`,
+      unchanged from Milestone 0.
+- [x] Map zooms via on-screen +/- buttons and pinch/scroll/double-click —
+      MapLibre's `NavigationControl` + default touch-zoom handlers.
+- [x] Compass control visible and resets bearing to north on click
+      (`NavigationControl({ showCompass: true })`).
+- [x] "Current location" control requests the browser Geolocation API,
+      centers the map on the result, and shows a live position dot
+      (`GeolocateControl({ trackUserLocation: true })`).
+- [x] Geolocation failure (permission denied / position unavailable /
+      timeout) shows a human-readable on-map message instead of failing
+      silently — verified for the permission-denied path.
+- [x] Map is strictly 2D for this milestone (`maxPitch: 0`) — 3D terrain is
+      Milestone 10, not pulled in early.
+- [x] Layout and controls verified responsive at both a desktop viewport
+      (1280px) and a small mobile viewport (390×844, iPhone-sized),
+      including safe-area padding for notched phones (`env(safe-area-inset-*)`)
+      and ≥44px touch targets on the map's zoom/compass/locate buttons
+      (MapLibre's default control buttons are 29px, enlarged in `App.css`).
+- [x] `npm run build` (`tsc -b && vite build`) passes with no type errors.
+- [x] Verified visually via automated screenshots (desktop, zoomed, mobile,
+      geolocated, and permission-denied states) before shipping.
+
 ## Data accuracy
 
 No real Khao Chalak trail, POI, elevation, or danger-zone data exists in this
@@ -90,15 +122,27 @@ default camera position) is an **unverified placeholder** — see
 [GIS_DATA.md](./GIS_DATA.md) for exactly what is and isn't verified, and the
 project's data rules before adding new spatial data.
 
-## Known limitations (Milestone 0)
+## Known limitations (Milestone 1)
 
-- No trail, routing, terrain, GPS, GPX, or offline functionality yet — this
-  is a foundation skeleton only.
-- The map basemap is MapLibre's public demo style (no terrain, no real
-  Khao Chalak features) — a dev-only placeholder, not licensed for
-  production use.
+- No trail, routing, terrain, GPS *tracking* (recording a route), GPX, or
+  offline functionality yet — this milestone is the base map only.
+- The map basemap is MapLibre's public demo style (`demotiles.maplibre.org`)
+  — sparse vector data (mostly country outlines), no real Khao Chalak
+  terrain or features, and not licensed for production use. It's
+  intentionally a placeholder until a proper basemap/terrain source is
+  wired in (Milestone 6/10).
+- The default camera position remains the Milestone 0 **unverified
+  placeholder** coordinate (see `GIS_DATA.md`) — not a surveyed trailhead.
+- Geolocation only works over HTTPS or `localhost` (a browser security
+  requirement, not a bug) — this is already satisfied by the live
+  Cloudflare deployment and local dev.
 - No authentication, no database migrations yet (PostGIS container starts
   but nothing reads/writes it until Milestone 5).
+- One pre-existing lint nit inherited from Milestone 0 (`oxlint`
+  `react(set-state-in-effect)` on the map-init `catch` block) — a
+  synchronous `setState` on the rare path where the MapLibre constructor
+  itself throws; harmless (runs at most once, no cascading renders) and
+  left as-is rather than restructured mid-milestone.
 
 ## Deploying so others can use it
 
@@ -118,5 +162,6 @@ trustworthy.
 
 ## Next milestone
 
-**Milestone 1 — Map MVP**: mobile-responsive 2D map with pan/zoom/compass and
-a working "current location" button.
+**Milestone 2 — Trail Data MVP**: render mock trail GeoJSON on the map,
+clearly labeled as mock/placeholder data (no real Khao Chalak trail data
+exists yet — see `GIS_DATA.md`).
