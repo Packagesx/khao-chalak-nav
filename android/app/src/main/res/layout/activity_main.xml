@@ -57,6 +57,25 @@
         app:backgroundTint="@android:color/white"
         app:tint="#3ddc97" />
 
+    <!-- Milestone 2: permanent label while mock trail data is on the map.
+         The data-accuracy rule requires fabricated data to be clearly
+         labeled everywhere it appears, not just via the muted line style. -->
+    <TextView
+        android:id="@+id/mockDataLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/bg_mock_data_banner"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
+        android:text="@string/mock_trail_data_label"
+        android:textColor="#e0e0e0"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/locateErrorBanner"
         android:layout_width="wrap_content"

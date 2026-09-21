@@ -153,11 +153,40 @@ Milestone 5 (spatial DB) onward.
       limitations below).
 - [x] App icon set (adaptive + legacy) generated from the existing PWA
       icon artwork so the app isn't shipped with the default icon.
-- [ ] **Not yet verified**: interactive on-device confirmation of
-      pan/zoom/compass/current-location by the user. Verified so far only
-      via a real compiled build + lint (no emulator/display is available
-      in the build sandbox) — a debug APK was shared for hands-on sideload
-      testing, and this checkbox flips once that's confirmed.
+- [x] **Verified on a real device** (Xiaomi phone, sideloaded debug APK):
+      pan, zoom (+/- buttons), and current-location (GPS fix acquired,
+      position dot tracked/moved with the device) all confirmed working
+      by the user.
+
+**Milestone 1 is fully DONE** — both the build/lint verification and the
+on-device interactive confirmation have passed.
+
+## Milestone 2 acceptance criteria (native Android, Trail Data MVP)
+
+- [x] A fabricated mock trail network (`android/app/src/main/assets/mock/trails.geojson`,
+      two `LineString` features) renders on the map as a muted-gray, dashed
+      line via a `GeoJsonSource` + `LineLayer` (`PropertyFactory.lineColor`,
+      `lineDasharray`, etc.) — the trail-rendering pipeline now works
+      end-to-end, ready to swap in real data later without changing the
+      rendering code.
+- [x] The mock data is **clearly labeled in three places**, per the
+      project's data-accuracy rule: (1) the GeoJSON file's own `_comment`
+      and per-feature `source` properties say it's fabricated, (2) the
+      line style itself (muted gray + dashed) is deliberately unlike how a
+      real, verified trail will eventually look, and (3) a permanent
+      on-screen banner (`mockDataLabel`, "⚠ MOCK TRAIL DATA — not real Khao
+      Chalak trails, placeholder only") is shown whenever the mock layer
+      loads — not relying on the line style alone, since a future restyle
+      could silently drop the only "this isn't real" signal.
+- [x] `GIS_DATA.md` dataset #3 (Trail network) updated to point at the new
+      mock file instead of saying "NOT YET COLLECTED".
+- [x] `gradle assembleDebug` and `gradle lintDebug` both `BUILD SUCCESSFUL`.
+- [x] Missing/unreadable mock asset fails visibly (a `Log.w` warning) rather
+      than silently showing an empty map, so a future regression (e.g. a
+      renamed asset path) is easy to notice.
+- [ ] **Not yet verified on-device by the user** — built and lint-checked
+      in the sandbox only so far (same no-emulator limitation as
+      Milestone 1); a debug APK has been shared for sideload testing.
 
 ## Data accuracy
 
@@ -167,10 +196,16 @@ default camera position) is an **unverified placeholder** — see
 [GIS_DATA.md](./GIS_DATA.md) for exactly what is and isn't verified, and the
 project's data rules before adding new spatial data.
 
-## Known limitations (Milestone 1, native)
+## Known limitations (Milestone 1 + 2, native)
 
-- No trail, routing, terrain, GPS *tracking* (recording a route), GPX, or
-  offline functionality yet — this milestone is the base map only.
+- The Milestone 2 trail is **fabricated placeholder geometry**, not a real
+  Khao Chalak trail — see `GIS_DATA.md` dataset #3 and the labeling
+  described in the Milestone 2 acceptance criteria above. It's also not
+  yet interactive (no tap-to-select, no distance/name popup) — that's
+  future work once real trail data and the route engine (Milestone 8)
+  exist.
+- No routing, GPS *tracking* (recording a route), GPX import/export, or
+  offline functionality yet.
 - The map basemap is MapLibre's public demo style (`demotiles.maplibre.org`)
   — sparse vector data (mostly country outlines), no real Khao Chalak
   terrain or features, and not licensed for production use. It's
@@ -178,11 +213,12 @@ project's data rules before adding new spatial data.
   wired in (Milestone 6/10).
 - The default camera position remains the Milestone 0 **unverified
   placeholder** coordinate (see `GIS_DATA.md`) — not a surveyed trailhead.
-- Not verified in an emulator or by me directly — the build sandbox has no
-  Android emulator/display, so verification so far is a real
-  `assembleDebug`/`lintDebug` build plus API introspection (`javap` against
-  the actual downloaded MapLibre AAR) rather than a visual check. A debug
-  APK was shared for the user to sideload and confirm on a real device.
+- Not verified in an emulator or visually by me directly — the build
+  sandbox has no Android emulator/display, so my own verification was a
+  real `assembleDebug`/`lintDebug` build plus API introspection (`javap`
+  against the actual downloaded MapLibre AAR) rather than a visual check.
+  The interactive UI/UX (pan/zoom/current-location) has since been
+  confirmed working by the user on a real device (sideloaded debug APK).
 - Debug build only covers the `arm64-v8a` ABI (kept the sideload APK under
   the file-delivery size limit); a real release would build an `.aab` so
   Play Store serves each device its own ABI slice.
@@ -205,11 +241,12 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for the backend deployment steps
 free web service sleeps after 15 minutes idle, and free Postgres expires
 after 30 days, which is why no database is deployed yet). Android app
 distribution (signed release build / Play Store listing) hasn't been set
-up yet — Milestone 1's native app has only been shared as an unsigned
-debug APK for direct sideload testing.
+up yet — the native app has only been shared as unsigned debug APKs for
+direct sideload testing.
 
 ## Next milestone
 
-**Milestone 2 — Trail Data MVP**: render mock trail GeoJSON on the native
-map, clearly labeled as mock/placeholder data (no real Khao Chalak trail
-data exists yet — see `GIS_DATA.md`).
+**Milestone 3 — GPS Tracking**: start/pause/stop recording a route with
+local persistence, using a real Android foreground service so recording
+survives the phone being locked/backgrounded (the main reason this project
+pivoted to a native app in the first place).

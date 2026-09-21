@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "_comment": "MOCK DATA -- NOT REAL KHAO CHALAK TRAIL DATA. Fabricated placeholder geometry for Milestone 2 (Trail Data MVP) UI/rendering work only. See /GIS_DATA.md dataset #3 -- no real trail survey exists yet. Coordinates are an arbitrary loop drawn near the Milestone 0/1 placeholder map center (13.15, 100.98) purely for visual testing; they do not correspond to any actual path on the ground.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "mock-loop-a",
+        "name": "Mock Loop Trail A (placeholder)",
+        "mock": true,
+        "source": "DATA REQUIRED -- fabricated for UI testing, see GIS_DATA.md"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [100.978, 13.148],
+          [100.9795, 13.1515],
+          [100.984, 13.153],
+          [100.987, 13.150],
+          [100.985, 13.146],
+          [100.981, 13.145],
+          [100.978, 13.148]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "mock-spur-b",
+        "name": "Mock Spur Trail B (placeholder)",
+        "mock": true,
+        "source": "DATA REQUIRED -- fabricated for UI testing, see GIS_DATA.md"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [100.984, 13.153],
+          [100.9875, 13.1555],
+          [100.990, 13.157]
+        ]
+      }
+    }
+  ]
+}

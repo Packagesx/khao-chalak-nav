@@ -22,23 +22,36 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.OnMapReadyCallback
 import org.maplibre.android.maps.Style
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.sources.GeoJsonSource
+import java.io.IOException
 
 /**
- * Milestone 1 (native track) -- Map MVP.
+ * Milestone 1 (native track) -- Map MVP -- pan/zoom/compass/current-location,
+ * DONE and confirmed on-device.
  *
- * Native-Android re-implementation of the same acceptance criteria the web
- * frontend already met: a mobile 2D map with pan/zoom/compass/current-
- * location. The web frontend (frontend/) is archived -- this native app is
- * now the shipping product (see project overview.md for the pivot
- * rationale: background GPS tracking (Milestone 3) and offline tile
- * storage (Milestone 11) need real native APIs a WebView-wrapped PWA can't
- * reliably provide).
+ * Milestone 2 (native track) -- Trail Data MVP -- renders a fabricated mock
+ * trail network (assets/mock/trails.geojson) so the trail-rendering pipeline
+ * (GeoJsonSource -> LineLayer) can be built and tested before any real Khao
+ * Chalak trail data exists. Per the project's data-accuracy rule (see
+ * /GIS_DATA.md), this is mock data and is labeled as such in three places:
+ * the source file's own `_comment`/`source` properties, a muted/dashed line
+ * style distinct from what real trail data will eventually use, and a
+ * permanent on-screen banner (`mockDataLabel`) -- not just the line style
+ * alone, since a color choice alone could be missed or restyled later
+ * without anyone noticing the label was the only thing marking it as fake.
+ *
+ * Native-Android re-implementation of the web frontend's original
+ * acceptance criteria (see project overview.md for the pivot rationale:
+ * background GPS tracking (Milestone 3) and offline tile storage
+ * (Milestone 11) need real native APIs a WebView-wrapped PWA can't reliably
+ * provide). The web frontend (frontend/) is archived.
  *
  * Kept strictly 2D on purpose -- pitch/tilt gestures are disabled so this
- * milestone doesn't reach ahead into Milestone 10 (3D terrain). No trail,
- * POI, or terrain data is loaded here yet -- that starts at Milestone 2
- * (Trail Data MVP) and Milestone 6 (DEM pipeline), using real or
- * clearly-labeled mock data only.
+ * doesn't reach ahead into Milestone 10 (3D terrain). No real terrain, POI,
+ * or elevation data is loaded here yet -- that starts at Milestone 6 (DEM
+ * pipeline) onward.
  */
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -54,6 +67,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // with a proper basemap/terrain source in later milestones.
     private val placeholderStyleUrl = "https://demotiles.maplibre.org/style.json"
 
+    // Milestone 2: fabricated placeholder trail geometry, NOT real Khao
+    // Chalak trail data. See assets/mock/trails.geojson and GIS_DATA.md
+    // dataset #3.
+    private val mockTrailAssetPath = "mock/trails.geojson"
+    private val mockTrailSourceId = "mock-trail-source"
+    private val mockTrailLayerId = "mock-trail-layer"
+
     private val locationPermissions = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -61,6 +81,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mapView: MapView
     private lateinit var locateErrorBanner: android.widget.TextView
+    private lateinit var mockDataLabel: android.widget.TextView
     private lateinit var map: MapLibreMap
     private var loadedStyle: Style? = null
     private var locationComponentActivated = false
@@ -84,6 +105,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_main)
         mapView = findViewById(R.id.mapView)
         locateErrorBanner = findViewById(R.id.locateErrorBanner)
+        mockDataLabel = findViewById(R.id.mockDataLabel)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
@@ -115,10 +137,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         map.setStyle(Style.Builder().fromUri(placeholderStyleUrl)) { style ->
             loadedStyle = style
+            addMockTrailLayer(style)
             if (hasLocationPermission()) {
                 enableLocationComponent()
             }
         }
+    }
+
+    /**
+     * Milestone 2: loads assets/mock/trails.geojson and renders it as a
+     * dashed, muted-gray line -- deliberately unlike how a real, verified
+     * trail will eventually look -- plus shows the permanent
+     * `mockDataLabel` banner. If the asset is ever missing (e.g. a future
+     * refactor that renames/removes it), fail visibly to a Logcat warning
+     * rather than silently showing an empty map, so a future
+     * milestone/regression is easy to notice at build time.
+     */
+    private fun addMockTrailLayer(style: Style) {
+        val geoJson = try {
+            assets.open(mockTrailAssetPath).bufferedReader().use { it.readText() }
+        } catch (e: IOException) {
+            android.util.Log.w(
+                "KhaoChalakNav",
+                "Could not load mock trail asset '$mockTrailAssetPath' -- " +
+                    "map will show no trail layer this run.",
+                e,
+            )
+            return
+        }
+
+        style.addSource(GeoJsonSource(mockTrailSourceId, geoJson))
+        style.addLayer(
+            LineLayer(mockTrailLayerId, mockTrailSourceId).withProperties(
+                PropertyFactory.lineColor("#9e9e9e"),
+                PropertyFactory.lineWidth(3.5f),
+                PropertyFactory.lineOpacity(0.85f),
+                PropertyFactory.lineDasharray(arrayOf(2f, 1.5f)),
+                PropertyFactory.lineCap("round"),
+                PropertyFactory.lineJoin("round"),
+            ),
+        )
+        mockDataLabel.visibility = View.VISIBLE
     }
 
     private fun onLocateButtonClicked() {

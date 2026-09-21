@@ -6,4 +6,5 @@
     <string name="locate_error_permission_denied">Location permission denied. Allow location access in Settings to use current location.</string>
     <string name="locate_error_unavailable">Your position is currently unavailable. Check your device\'s GPS/location service and try again.</string>
     <string name="locate_error_generic">Could not get your current location.</string>
+    <string name="mock_trail_data_label">⚠ MOCK TRAIL DATA — not real Khao Chalak trails, placeholder only</string>
 </resources>

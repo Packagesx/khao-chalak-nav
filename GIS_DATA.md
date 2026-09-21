@@ -74,11 +74,20 @@ official park data, or verified community GPX) before Milestone 2.
   "license": "DATA REQUIRED"
 }
 ```
-Status: **NOT YET COLLECTED.** No trail geometry exists in this repository.
-Milestone 2 introduces `mock/trails.geojson`, explicitly labeled
-`MOCK DATA — NOT REAL KHAO CHALAK DATA`, as a stand-in until real data is
-sourced (candidates to evaluate: field GPS survey, OpenStreetMap extract with
-manual verification, or a local trail-running club's shared GPX).
+Status: **MOCK DATA ONLY — no real trail geometry exists in this repository
+yet.** Milestone 2 (native Android) added
+`android/app/src/main/assets/mock/trails.geojson` — two fabricated
+`LineString` features (an arbitrary loop + spur) drawn near the Milestone
+0/1 placeholder map center, used only to build and test the
+GeoJsonSource/LineLayer trail-rendering pipeline. Every feature carries a
+`"mock": true` property and a `source: "DATA REQUIRED..."` note, the file's
+top-level `_comment` says it's fabricated, and the app additionally shows a
+permanent on-screen "MOCK TRAIL DATA" banner whenever it's loaded (see
+`README.md`'s Milestone 2 acceptance criteria) — labeled in the data, the
+render style, and the UI, not just one of the three. This file must be
+swapped for real data (candidates to evaluate: field GPS survey,
+OpenStreetMap extract with manual verification, or a local trail-running
+club's shared GPX) before any accuracy claim is made about it.
 
 ### 4. DEM (Digital Elevation Model)
 

@@ -13,13 +13,29 @@ android {
         // giving us modern location/permission APIs without extra shims.
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0-milestone1"
+        versionCode = 2
+        versionName = "0.2.0-milestone2"
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+        }
+    }
+
+    // Split per-ABI instead of shipping one "fat" APK with all four native
+    // architectures' copies of libmaplibre.so -- that universal APK runs
+    // ~55MB even in debug. arm64-v8a covers effectively all Android phones
+    // sold since ~2017, so it's the one worth sideloading for hands-on
+    // testing; a real Play Store release would instead use an .aab
+    // (Play's App Bundle format) and let Play serve each device its own
+    // ABI slice automatically.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a")
+            isUniversalApk = false
         }
     }
 
