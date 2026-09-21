@@ -193,6 +193,36 @@ on-device interactive confirmation have passed.
 **Milestone 2 is fully DONE** — both the build/lint verification and the
 on-device interactive confirmation have passed.
 
+## Milestone 3 acceptance criteria (native Android, GPS Tracking)
+
+- [x] Start/pause/resume/stop controls for recording a route
+      (`btnRecord`/`btnStop`), backed by `TrackingService`, a real Android
+      **foreground service** — recording keeps running when the phone is
+      locked or the app is backgrounded, using
+      `ContextCompat.startForegroundService` + a bound-service connection
+      for live UI updates while the app is in the foreground.
+- [x] Local persistence via **Room** (`RecordingEntity`, `TrackPointEntity`,
+      `TrackDao`, `AppDatabase`) — every GPS fix during a recording is
+      written to SQLite as it arrives, and the recording row is finalized
+      (end time, total distance) when stopped.
+- [x] Live UI modeled on `design-refs/live-tracking-ui-reference.png` (see
+      [DESIGN.md](./DESIGN.md#reference-1--live-tracking-screen-design-refslive-tracking-ui-referencepng)):
+      a floating status card (elapsed time, distance in km, updated every
+      second), and the route being recorded rendered live on the map as a
+      **solid vivid-red line** — deliberately distinct from Milestone 2's
+      muted-gray-dashed *mock* trail, so "what I'm recording right now" is
+      never visually confused with "unverified placeholder data".
+- [x] The location arrow stays **centered on screen** while recording
+      (`CameraMode.TRACKING_COMPASS` forced on at record-start), and the
+      existing "current location" button now also re-centers on every tap
+      even if the map had been panned away — both per explicit request.
+- [x] Distance uses `Location.distanceTo()` (a proper great-circle
+      calculation in meters), never a naive degree diff — consistent with
+      the project's CRS discipline.
+- [x] `gradle assembleDebug` and `gradle lintDebug` both `BUILD SUCCESSFUL`
+      (26 non-blocking lint nits, 0 errors — see Known limitations).
+- [ ] Not yet verified on-device by the user (build/lint-verified only so far).
+
 ## Data accuracy
 
 No real Khao Chalak trail, POI, elevation, or danger-zone data exists in this
@@ -201,7 +231,7 @@ default camera position) is an **unverified placeholder** — see
 [GIS_DATA.md](./GIS_DATA.md) for exactly what is and isn't verified, and the
 project's data rules before adding new spatial data.
 
-## Known limitations (Milestone 1 + 2, native)
+## Known limitations (Milestone 1 + 2 + 3, native)
 
 - The Milestone 2 trail is **fabricated placeholder geometry**, not a real
   Khao Chalak trail — see `GIS_DATA.md` dataset #3 and the labeling
@@ -209,8 +239,26 @@ project's data rules before adding new spatial data.
   yet interactive (no tap-to-select, no distance/name popup) — that's
   future work once real trail data and the route engine (Milestone 8)
   exist.
-- No routing, GPS *tracking* (recording a route), GPX import/export, or
-  offline functionality yet.
+- No routing, GPX import/export, or offline functionality yet. Milestone 3
+  adds GPS *tracking* (recording), but recorded routes aren't exportable or
+  viewable in a history list yet — that's Milestone 4 (GPX export) and
+  Milestone 13 (Activity Analytics).
+- Milestone 3's foreground service requests location updates via MapLibre's
+  own `LocationEngineDefault` (same engine as Milestone 1's current-location
+  button) at a 1-2s interval with 3m displacement filtering — not yet tuned
+  for battery use over a multi-hour hike; revisit if real-world testing
+  shows it draining the battery too fast.
+- Room's annotation processor runs via **KSP, not kapt** — kapt's bundled
+  `kotlinx-metadata-jvm` couldn't parse the metadata format our pinned
+  Kotlin 2.2.10 compiler writes (`Provided Metadata instance has version
+  2.2.0, while maximum supported version is 2.0.0`). KSP processes Kotlin
+  symbols directly instead of reading that compiled metadata, so it isn't
+  affected, and it's what Room's own docs recommend over kapt now anyway.
+- A very small (practically unreachable at the ~1-2s GPS update rate)
+  timing race exists between starting a recording (an async Room insert
+  assigns its ID) and the first location fix arriving — see the comment in
+  `TrackingService.locationCallback` for the exact scenario and why it was
+  accepted rather than engineered away for this milestone.
 - The map basemap is MapLibre's public demo style (`demotiles.maplibre.org`)
   — sparse vector data (mostly country outlines), no real Khao Chalak
   terrain or features, and not licensed for production use. It's
@@ -251,12 +299,8 @@ direct sideload testing.
 
 ## Next milestone
 
-**Milestone 3 — GPS Tracking**: start/pause/stop recording a route with
-local persistence, using a real Android foreground service so recording
-survives the phone being locked/backgrounded (the main reason this project
-pivoted to a native app in the first place). Scope now also includes a live
-recording UI modeled on `design-refs/live-tracking-ui-reference.png` — see
-[DESIGN.md](./DESIGN.md#reference-1--live-tracking-screen-design-refslive-tracking-ui-referencepng):
-a floating status card (elapsed time, freshness), a live distance/pace stat
-row, and the recorded-so-far track rendered on the map as a solid line
-(visually distinct from Milestone 2's muted-dashed mock trail).
+**Milestone 4 — GPX**: import/export recorded routes as GPX/GeoJSON, plus a
+"Connect with Strava" personal GPX import (own activities/routes only, via
+backend-mediated OAuth — see the Claude project doc's Strava section for
+the full legal/architecture rationale). First, though, Milestone 3 needs
+on-device confirmation from the user (see its acceptance criteria above).
