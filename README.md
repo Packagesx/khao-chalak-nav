@@ -184,9 +184,11 @@ on-device interactive confirmation have passed.
 - [x] Missing/unreadable mock asset fails visibly (a `Log.w` warning) rather
       than silently showing an empty map, so a future regression (e.g. a
       renamed asset path) is easy to notice.
-- [ ] **Not yet verified on-device by the user** — built and lint-checked
-      in the sandbox only so far (same no-emulator limitation as
-      Milestone 1); a debug APK has been shared for sideload testing.
+- [x] **Verified on a real device** (Xiaomi phone, sideloaded debug APK):
+      mock trail line renders correctly, confirmed by the user.
+
+**Milestone 2 is fully DONE** — both the build/lint verification and the
+on-device interactive confirmation have passed.
 
 ## Data accuracy
 
