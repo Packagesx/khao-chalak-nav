@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,11 +24,14 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.location.LocationComponentActivationOptions
+import org.maplibre.android.location.LocationComponentOptions
+import org.maplibre.android.location.OnCameraTrackingChangedListener
 import org.maplibre.android.location.engine.LocationEngineCallback
 import org.maplibre.android.location.engine.LocationEngineDefault
 import org.maplibre.android.location.engine.LocationEngineRequest
 import org.maplibre.android.location.engine.LocationEngineResult
 import org.maplibre.android.location.modes.CameraMode
+import org.maplibre.android.location.modes.RenderMode
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.OnMapReadyCallback
@@ -204,12 +208,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
-        findViewById<FloatingActionButton>(R.id.btnZoomIn).setOnClickListener {
-            map.easeCamera(CameraUpdateFactory.zoomIn(), 200)
-        }
-        findViewById<FloatingActionButton>(R.id.btnZoomOut).setOnClickListener {
-            map.easeCamera(CameraUpdateFactory.zoomOut(), 200)
-        }
+        findViewById<FloatingActionButton>(R.id.btnZoomIn).setOnClickListener { zoomBy(1.0) }
+        findViewById<FloatingActionButton>(R.id.btnZoomOut).setOnClickListener { zoomBy(-1.0) }
         findViewById<FloatingActionButton>(R.id.btnLocate).setOnClickListener {
             onLocateButtonClicked()
         }
@@ -231,6 +231,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // north and tapping it resets bearing -- MapLibre's default
         // behavior, matching the web app's NavigationControl compass.
         map.uiSettings.isCompassEnabled = true
+        // MapLibre's default compass spot (top-right) sits right under our
+        // zoom-in button (confirmed on-device). Park it directly below the
+        // zoom +/- stack instead: 16dp margin + 48dp + 8dp + 48dp + 12dp gap.
+        map.uiSettings.setCompassGravity(Gravity.TOP or Gravity.END)
+        map.uiSettings.setCompassMargins(0, dp(132), dp(16), 0)
 
         map.setStyle(Style.Builder().fromUri(placeholderStyleUrl)) { style ->
             loadedStyle = style
@@ -304,7 +309,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (!locationComponentActivated) {
             val locationComponent = map.locationComponent
+            // trackingGesturesManagement: pinch/double-tap zoom and rotate
+            // stay anchored on the puck instead of dismissing camera
+            // tracking -- without it, any zoom gesture silently unhooked the
+            // camera and the puck drifted off-center mid-recording
+            // (confirmed on-device).
+            val componentOptions = LocationComponentOptions.builder(this)
+                .trackingGesturesManagement(true)
+                .build()
             val activationOptions = LocationComponentActivationOptions.builder(this, style)
+                .locationComponentOptions(componentOptions)
                 .useDefaultLocationEngine(true)
                 .locationEngineRequest(
                     LocationEngineRequest.Builder(750)
@@ -321,9 +335,59 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             // the puck centered on screen, which Milestone 3's recording
             // flow relies on (see beginRecording()).
             locationComponent.cameraMode = CameraMode.TRACKING_COMPASS
+            // Default RenderMode.NORMAL draws a plain dot; COMPASS adds the
+            // heading arrow the recording flow is described in terms of.
+            locationComponent.renderMode = RenderMode.COMPASS
+            locationComponent.addOnCameraTrackingChangedListener(cameraTrackingListener)
             locationComponentActivated = true
         }
+        applyRecordingCameraLock()
     }
+
+    // ---- Milestone 3: keep the puck centered while recording -----------
+
+    private val isRecording: Boolean
+        get() = trackingService?.status == RecordingStatus.RECORDING
+
+    private val cameraTrackingListener = object : OnCameraTrackingChangedListener {
+        override fun onCameraTrackingDismissed() {
+            // Anything that still breaks tracking mid-recording (a fling, a
+            // programmatic camera move) snaps straight back to the puck.
+            if (isRecording) map.locationComponent.cameraMode = CameraMode.TRACKING_COMPASS
+        }
+
+        override fun onCameraTrackingChanged(currentMode: Int) = Unit
+    }
+
+    /**
+     * While actively recording, the location arrow stays centered on
+     * screen (explicit request): tracking is (re-)enabled and pan gestures
+     * are switched off, since a pan is the one gesture that can't be
+     * reconciled with a centered puck. Zoom/rotate still work (anchored on
+     * the puck via trackingGesturesManagement). Paused/idle gets free
+     * panning back so the user can look around.
+     */
+    private fun applyRecordingCameraLock() {
+        if (!::map.isInitialized) return
+        val lock = isRecording
+        map.uiSettings.isScrollGesturesEnabled = !lock
+        if (lock && locationComponentActivated) {
+            map.locationComponent.cameraMode = CameraMode.TRACKING_COMPASS
+        }
+    }
+
+    private fun zoomBy(delta: Double) {
+        if (!::map.isInitialized) return
+        val component = map.locationComponent
+        if (locationComponentActivated && component.cameraMode != CameraMode.NONE) {
+            // Zoom through the location component so tracking isn't dismissed.
+            component.zoomWhileTracking(map.cameraPosition.zoom + delta, 200)
+        } else {
+            map.easeCamera(if (delta > 0) CameraUpdateFactory.zoomIn() else CameraUpdateFactory.zoomOut(), 200)
+        }
+    }
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     @Suppress("MissingPermission") // guarded by hasLocationPermission() at every call site
     private fun recenterOnLastLocation() {
@@ -438,6 +502,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 updateRecordingStatusText()
             }
         }
+        applyRecordingCameraLock()
     }
 
     private fun updateRecordingStatusText() {
